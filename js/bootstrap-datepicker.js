@@ -1039,7 +1039,7 @@
 						.css('display', this.o.clearBtn === true ? 'table-cell' : 'none');
       this.picker.find('tfoot .time-submit')
             .css('display', this.o.enableTime === true ? 'table-cell' : 'none')
-            .html("<div class = 'form-group time-row-container'>" + this.o.timeIcon + "<input class = 'time-picker form-control' size=4/><button type = 'submit' class = 'time-submit-btn btn btn-primary'>Done</button></div>")
+            .html("<div class = 'form-group time-row-container'><div class = 'time-icon-container'>" + this.o.timeIcon + "<input class = 'time-picker form-control' size=4/></div><button type = 'submit' class = 'time-submit-btn btn btn-primary'>Done</button></div>")
       this.picker.find('.time-picker').on("change", () => {
         var time = this.picker.find('.time-picker').val();
         if (this.validateTime(time)) {
