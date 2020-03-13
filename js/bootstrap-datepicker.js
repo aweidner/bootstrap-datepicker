@@ -490,6 +490,18 @@
 				return;
 			if (!this.isInline)
 				this.picker.appendTo(this.o.container);
+
+      if (this.o.enableTime) {
+        var possibleTimeEntries = this.inputField.val().split(" ");
+        if (possibleTimeEntries.length > 1 && this.validateTime(possibleTimeEntries[1])) {
+          var formatted = this.formatTime(possibleTimeEntries[1]);
+          // Use of .trigger to force the initialization
+          this.picker.find(".time-picker").val(formatted).trigger('change')
+          this.viewTime = formatted; 
+        } else {
+          $(".time-picker").val(this.viewTime);
+        }
+      }
 			this.place();
 			this.picker.show();
 			this._attachSecondaryEvents();
@@ -972,6 +984,34 @@
 			view.find('td').html(html);
 		},
 
+    validateTime: function(time) {
+      var splitAtColon = time.split(":");
+
+      if (splitAtColon.length != 2) {
+        return false;
+      }
+
+      var hours = parseInt(splitAtColon[0]);
+      var minutes = parseInt(splitAtColon[1]);
+
+      return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+    },
+
+    formatTime: function(time) {
+      var splitAtColon = time.split(":");
+      var hours = parseInt(splitAtColon[0]);
+      var minutes = parseInt(splitAtColon[1]);
+      
+      return `${this.addZero(hours)}:${this.addZero(minutes)}`
+    },
+
+    addZero: function(n) {
+      if (n < 10) {
+        return "0" + n;
+      }
+      return n;
+    },
+
 		fill: function(){
 			var d = new Date(this.viewDate),
 				year = d.getUTCFullYear(),
@@ -997,6 +1037,24 @@
 			this.picker.find('tfoot .clear')
 						.text(cleartxt)
 						.css('display', this.o.clearBtn === true ? 'table-cell' : 'none');
+      this.picker.find('tfoot .time-submit')
+            .css('display', this.o.enableTime === true ? 'table-cell' : 'none')
+            .html("<div class = 'form-group time-row-container'><input class = 'time-picker form-control' size=4/><button type = 'submit' class = 'time-submit-btn btn btn-primary'>Done</button></div>")
+      this.picker.find('.time-picker').on("change", () => {
+        var time = this.picker.find('.time-picker').val();
+        if (this.validateTime(time)) {
+          var formatted = formatTime(time)
+          this.viewTime = formatted;
+        }
+        this.picker.find('.time-picker').val(this.viewTime)
+      });
+      this.picker.find('.time-picker').val(this.viewTime);
+
+      this.picker.find('.time-submit-btn').on("click", () => {
+        this._trigger("changeDate");
+				this.hide();
+      })
+
 			this.picker.find('thead .datepicker-title')
 						.text(this.o.title)
 						.css('display', typeof this.o.title === 'string' && this.o.title !== '' ? 'table-cell' : 'none');
@@ -1239,9 +1297,9 @@
 				}
 			}
 
-			if (this.picker.is(':visible') && this._focused_from){
-				this._focused_from.focus();
-			}
+			//if (this.picker.is(':visible') && this._focused_from){
+			//  this._focused_from.focus();
+			//}
 			delete this._focused_from;
 		},
 
@@ -1973,6 +2031,9 @@
 							'<tr>'+
 								'<th colspan="7" class="clear"></th>'+
 							'</tr>'+
+              '<tr>' +
+                '<th colspan="7" class="time-submit"></th>'+
+              '<tr>' +
 						'</tfoot>'
 	};
 	DPGlobal.template = '<div class="datepicker">'+
