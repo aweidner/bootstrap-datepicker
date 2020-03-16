@@ -1043,7 +1043,7 @@
       this.picker.find('.time-picker').on("change", () => {
         var time = this.picker.find('.time-picker').val();
         if (this.validateTime(time)) {
-          var formatted = formatTime(time)
+          var formatted = this.formatTime(time)
           this.viewTime = formatted;
         }
         this.picker.find('.time-picker').val(this.viewTime)
